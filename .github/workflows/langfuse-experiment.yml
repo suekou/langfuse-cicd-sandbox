@@ -1,0 +1,44 @@
+name: Langfuse experiment gate
+
+on:
+  pull_request:
+    paths:
+      - "experiments/**"
+      - "scripts/**"
+      - "assets/**"
+      - "prompts/**"
+      - "package.json"
+      - ".github/workflows/langfuse-experiment.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      # Pin to a specific release from https://github.com/langfuse/experiment-action/releases
+      - uses: langfuse/experiment-action@887e7936bdf64a2197aa7dcfdc8a9e4afd85e229
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          langfuse_public_key: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          langfuse_secret_key: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          langfuse_base_url: https://jp.cloud.langfuse.com
+
+          experiment_path: experiments/support-agent-gate.ts
+          dataset_name: country-from-image-dataset
+
+          should_fail_on_regression: "true"
+          should_comment_on_pr: "true"
+
+          github_token: ${{ github.token }}

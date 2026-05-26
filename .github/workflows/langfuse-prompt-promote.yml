@@ -1,0 +1,43 @@
+name: Langfuse prompt promote
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "prompts/**"
+      - "scripts/promote-prompt.ts"
+      - ".github/workflows/langfuse-prompt-promote.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: langfuse-prompt-promote
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Promote prompt to Langfuse (label=latest)
+        env:
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_BASE_URL: https://jp.cloud.langfuse.com
+          GIT_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          GIT_ACTOR: ${{ github.actor }}
+        run: pnpm tsx scripts/promote-prompt.ts

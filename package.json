@@ -1,0 +1,25 @@
+{
+  "name": "langfuse-cicd",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "scripts": {
+    "seed": "tsx --env-file=.env scripts/seed-dataset.ts",
+    "promote:prompt": "tsx --env-file=.env scripts/promote-prompt.ts",
+    "experiment:local": "tsx --env-file=.env experiments/support-agent-gate.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.79",
+    "@langfuse/client": "^5.3.0",
+    "@langfuse/otel": "^5.3.0",
+    "@langfuse/tracing": "^5.3.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "ai": "^6.0.191"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
